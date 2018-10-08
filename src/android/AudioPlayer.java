@@ -277,14 +277,22 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 Log.d(LOG_TAG, "MPEG-4 recording started with bit rate of " + bitRate + ", sample rate of " + sampleRate + "hz, " + channels + " audio channel(s)");
                 
                 this.recorder.setOutputFile(this.tempFile);
+                if (this.recorder.getRecordingState() != MediaRecorder.RECORDSTATE_RECORDING) {
+                    this.recorder.stop();
+                    this.recorder.release();
+                }
                 try {
                     this.recorder.prepare();
                     this.recorder.start();
                     this.setState(STATE.MEDIA_RUNNING);
                     return;
                 } catch (IllegalStateException e) {
+                    this.recorder.stop();
+                    this.recorder.release();
                     e.printStackTrace();
                 } catch (IOException e) {
+                    this.recorder.stop();
+                    this.recorder.release();
                     e.printStackTrace();
                 }
 
